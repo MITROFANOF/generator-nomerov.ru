@@ -1,0 +1,4 @@
+# Not published by deploy.sh (git archive).
+.gitattributes export-ignore
+deploy.sh export-ignore
+CNAME export-ignore
