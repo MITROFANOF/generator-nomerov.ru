@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Генератор номеров — игра про автомобильные номера: блатные номера, коллекция, регионы</title>
+<meta name="description" content="Бесплатная игра «Генератор номеров»: крути автомобильные номера России и Беларуси, лови блатные серии АМР, ЕКХ, ООО и номера вроде А777АА 77, собирай коллекцию. Android и браузер.">
+<link rel="canonical" href="https://generator-nomerov.ru/">
+<link rel="icon" href="/numgen-icon.jpg" type="image/jpeg">
+<link rel="apple-touch-icon" href="/numgen-icon.jpg">
+<meta name="theme-color" content="#0b0b10">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="Генератор номеров">
+<meta property="og:title" content="Генератор номеров — игра про автомобильные номера">
+<meta property="og:description" content="Крути номера, лови блатные серии, собирай коллекцию. Больше 600 спецсерий, 89 регионов, гражданские, полицейские, военные номера и номера такси.">
+<meta property="og:url" content="https://generator-nomerov.ru/">
+<meta property="og:image" content="https://generator-nomerov.ru/numgen-icon.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Inter:wght@400;500;600&family=Roboto+Condensed:wght@600&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["VideoGame", "MobileApplication"],
+  "name": "Генератор номеров",
+  "alternateName": ["Генератор автомобильных номеров", "Генератор госномеров", "Number Generator"],
+  "description": "Игра-генератор автомобильных номеров России и Беларуси: блатные серии, комбинации цифр, редкость номеров и коллекция.",
+  "url": "https://generator-nomerov.ru/",
+  "image": "https://generator-nomerov.ru/numgen-icon.jpg",
+  "genre": ["Casual", "Simulation"],
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Android, Web",
+  "inLanguage": ["ru", "en"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" },
+  "author": { "@type": "Organization", "name": "Mitrofan Games", "url": "https://mitrofanof.ru/" },
+  "installUrl": "https://play.google.com/store/apps/details?id=com.AksiCo.NumGen",
+  "sameAs": ["https://play.google.com/store/apps/details?id=com.AksiCo.NumGen", "https://play.mitrofanof.ru/"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Игра бесплатная?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Да. Номера крутятся за игровую валюту, которую зарабатываешь продажей номеров. Покупок за деньги нет, есть необязательная реклама за бонусы." }
+    },
+    {
+      "@type": "Question",
+      "name": "Можно ли играть на iPhone?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Да, через браузер: открой play.mitrofanof.ru в Safari и добавь страницу на экран «Домой» — игра запускается как приложение." }
+    },
+    {
+      "@type": "Question",
+      "name": "Номера в игре настоящие?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Номера составлены по настоящим правилам: только разрешённые буквы, реальные коды регионов и известные спецсерии. Совпадение с номером конкретной машины — случайность." }
+    },
+    {
+      "@type": "Question",
+      "name": "Что такое блатной номер?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Так называют номера, которые выделяются: серии госорганов вроде АМР, ЕКХ и ООО, одинаковые цифры (777), одинаковые буквы, «зеркальные» и круглые номера. В игре такие номера ценятся выше остальных." }
+    }
+  ]
+}
+</script>
+<style>
+  :root {
+    --bg: #0b0b10;
+    --surface: rgba(255, 255, 255, 0.04);
+    --border: rgba(255, 255, 255, 0.09);
+    --text: #f4f4f7;
+    --muted: #9a9aa8;
+    --accent: #4fd1ff;
+    --accent-2: #7a6bff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+
+  header.top { padding: 20px 0; }
+  header.top a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  header.top a:hover { color: var(--text); }
+
+  .hero { padding: 24px 0 8px; display: flex; gap: 24px; align-items: center; }
+  .hero img { width: 104px; height: 104px; border-radius: 22%; flex-shrink: 0;
+    box-shadow: 0 10px 24px rgba(0,0,0,.5), 0 10px 30px rgba(79,209,255,.18); }
+  h1 {
+    font-family: Unbounded, Inter, sans-serif;
+    font-weight: 800;
+    font-size: clamp(30px, 6vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 0 0 10px;
+  }
+  .lead { color: var(--muted); font-size: 18px; margin: 0; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 28px 0 8px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 20px; border-radius: 999px;
+    font-weight: 600; font-size: 15px; text-decoration: none;
+    border: 1px solid var(--border); color: var(--text);
+    transition: border-color .2s, background .2s;
+  }
+  .btn:hover { border-color: rgba(79,209,255,.5); background: rgba(79,209,255,.08); }
+  .btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .btn.primary:hover { background: #fff; }
+  .btn svg { width: 16px; height: 16px; }
+
+  h2 {
+    font-family: Unbounded, Inter, sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.25;
+    margin: 56px 0 14px;
+  }
+  h3 { font-size: 17px; margin: 24px 0 6px; }
+  p, li { color: #d6d6de; }
+  ul { padding-left: 20px; }
+  li { margin: 4px 0; }
+  strong { color: var(--text); }
+
+  /* Номера нарисованы вёрсткой, а не картинкой: так их текст видит поисковик. */
+  .plates { display: flex; flex-wrap: wrap; gap: 14px; margin: 36px 0 0; }
+  .plate {
+    display: inline-flex; align-items: stretch;
+    height: 52px;
+    background: #fff; color: #111;
+    border: 2.5px solid #111; border-radius: 6px;
+    font-family: "Roboto Condensed", "Arial Narrow", sans-serif;
+    font-weight: 600;
+    box-shadow: 0 6px 18px rgba(0,0,0,.45);
+  }
+  .plate .num { display: flex; align-items: baseline; padding: 0 10px; font-size: 38px; line-height: 50px; letter-spacing: 1px; }
+  .plate .num small { font-size: 30px; }
+  .plate .reg {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-left: 2.5px solid #111; padding: 0 7px; min-width: 52px;
+  }
+  .plate .reg b { font-size: 28px; line-height: 1; }
+  .plate .reg i { font-style: normal; font-size: 10px; display: flex; align-items: center; gap: 3px; line-height: 1.2; }
+  .plate .reg i::after {
+    content: ""; width: 14px; height: 9px; border: 1px solid #999;
+    background: linear-gradient(#fff 33%, #1c57c9 33% 66%, #d52b1e 66%);
+  }
+  .plate.police { background: #1b4fb6; color: #fff; }
+  .plate.police, .plate.police .reg { border-color: #fff; }
+  .plate.taxi { background: #f5c400; }
+  .plate.army { background: #111; color: #fff; }
+  .plate.army, .plate.army .reg { border-color: #fff; }
+  .plate.police .reg i::after, .plate.army .reg i::after, .plate.taxi .reg i::after { display: none; }
+
+  .tiers { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; padding: 0; list-style: none; }
+  .tiers li { margin: 0; padding: 5px 12px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid var(--border); }
+  .t-common { color: #c9c9d2; }
+  .t-uncommon { color: #6fdc8c; }
+  .t-rare { color: #4fb2ff; }
+  .t-epic { color: #b98cff; }
+  .t-legendary { color: #ffc23d; }
+  .t-illegal { color: #ff6b6b; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+  td:first-child { font-family: "Roboto Condensed", sans-serif; font-weight: 600; font-size: 17px; white-space: nowrap; color: var(--text); }
+
+  details { border-bottom: 1px solid var(--border); padding: 12px 0; }
+  summary { cursor: pointer; font-weight: 600; color: var(--text); }
+  details p { margin: 8px 0 0; }
+
+  .cta { margin: 56px 0 0; padding: 24px; border: 1px solid var(--border); border-radius: 24px; background: var(--surface); }
+  .cta h2 { margin-top: 0; }
+
+  footer {
+    margin: 64px auto 0; max-width: 760px;
+    padding: 24px 16px 32px;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    color: var(--muted); font-size: 13px; border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 520px) {
+    .hero { flex-direction: column; align-items: flex-start; }
+    .plate { height: 44px; }
+    .plate .num { font-size: 31px; line-height: 42px; padding: 0 8px; }
+    .plate .num small { font-size: 24px; }
+    .plate .reg { min-width: 44px; }
+    .plate .reg b { font-size: 22px; }
+    td:first-child { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><a href="https://mitrofanof.ru/">← Mitrofan Games</a></header>
+
+<main>
+  <section class="hero">
+    <img src="/numgen-icon.jpg" alt="Иконка игры «Генератор номеров»" width="104" height="104">
+    <div>
+      <h1>Генератор номеров</h1>
+      <p class="lead">Игра про автомобильные номера: крути госномера, лови блатные серии и собирай коллекцию.</p>
+    </div>
+  </section>
+
+  <div class="actions">
+    <a class="btn primary" href="https://play.google.com/store/apps/details?id=com.AksiCo.NumGen&amp;referrer=utm_source%3Dgenerator-nomerov.ru%26utm_medium%3Dgame_page%26utm_campaign%3Dsite">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      Скачать в Google Play
+    </a>
+    <a class="btn" href="https://play.mitrofanof.ru/?utm_source=generator-nomerov.ru&amp;utm_medium=game_page&amp;utm_campaign=site">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>
+      Играть в браузере
+    </a>
+    <a class="btn" href="https://t.me/+1n15yeqVHLY4NjVi">Новости в Telegram</a>
+  </div>
+
+  <div class="plates" aria-label="Примеры номеров из игры">
+    <span class="plate"><span class="num">А<small>&#8202;</small>777<small>АА</small></span><span class="reg"><b>77</b><i>RUS</i></span></span>
+    <span class="plate"><span class="num">Е<small>&#8202;</small>001<small>КХ</small></span><span class="reg"><b>97</b><i>RUS</i></span></span>
+    <span class="plate"><span class="num">О<small>&#8202;</small>555<small>ОО</small></span><span class="reg"><b>78</b><i>RUS</i></span></span>
+    <span class="plate police"><span class="num">А<small>&#8202;</small>0102</span><span class="reg"><b>77</b><i>RUS</i></span></span>
+    <span class="plate taxi"><span class="num">ВТ<small>&#8202;</small>777</span><span class="reg"><b>77</b><i>RUS</i></span></span>
+    <span class="plate army"><span class="num">7777<small>АВ</small></span><span class="reg"><b>10</b><i>RUS</i></span></span>
+  </div>
+
+  <h2>Что это за игра</h2>
+  <p>«Генератор номеров» — бесплатная казуальная игра для Android и браузера. Нажимаешь кнопку — выпадает случайный автомобильный номер. Каждый номер сделан по настоящим правилам: только буквы, которые бывают на номерах, реальные коды регионов и настоящие спецсерии. Игра сама определяет, чем номер хорош, оценивает его редкость и цену, а дальше решаешь ты: оставить его в коллекции или продать и крутить дальше.</p>
+  <p>Это генератор госномеров, который превратили в игру-коллекцию: главная цель — поймать номер, о котором мечтают автомобилисты, вроде А777АА 77 или Е001КХ 97.</p>
+
+  <h2>Блатные номера и спецсерии</h2>
+  <p>В игре <strong>больше 600 особых серий</strong> российских номеров — те буквенные сочетания, которые в разные годы выдавали госорганам, ведомствам и чиновникам. Если выпала такая серия в «своём» регионе, номер стоит намного дороже обычного. Несколько примеров:</p>
+  <table>
+    <thead><tr><th>Серия</th><th>Регион</th><th>Чьи номера</th></tr></thead>
+    <tbody>
+      <tr><td>АМР, ВМР, КМР, ММР</td><td>77</td><td>Частично МВД, ФСБ и подведомственные службы</td></tr>
+      <tr><td>ЕКХ</td><td>77, 97</td><td>ФСО — та самая серия, которую в народе расшифровывают «Еду Как Хочу»</td></tr>
+      <tr><td>САС</td><td>77</td><td>ФСК, ФСБ</td></tr>
+      <tr><td>ХКХ</td><td>77</td><td>Частично ФСБ Москвы</td></tr>
+      <tr><td>ССС</td><td>77</td><td>Центр спецсвязи, фельдъегерская служба</td></tr>
+      <tr><td>ООО</td><td>77, 78</td><td>До 1998 года — ФСБ, в Петербурге — ФСО</td></tr>
+      <tr><td>ААА</td><td>78</td><td>Органы исполнительной власти Санкт-Петербурга</td></tr>
+    </tbody>
+  </table>
+  <p>В других регионах те же буквы тоже ценятся — как просто «блатной номер». Все найденные серии с описаниями собраны в игре в каталоге редкостей.</p>
+
+  <h2>Какие номера считаются красивыми</h2>
+  <p>Кроме серий игра узнаёт комбинации цифр и букв — за каждую номер стоит дороже, а несколько комбинаций сразу дают множитель:</p>
+  <ul>
+    <li><strong>Одинаковые цифры</strong> — 777, 555, 111 и пары вроде 772;</li>
+    <li><strong>Зеркальные цифры</strong> — 121, 343, 1221;</li>
+    <li><strong>Цифры подряд</strong> — 123, 456, 789;</li>
+    <li><strong>Круглый номер</strong> — 100, 500, 7000;</li>
+    <li><strong>Малый номер</strong> — 001, 007;</li>
+    <li><strong>Похож на год</strong> — четыре цифры вроде 1987 или 2024;</li>
+    <li><strong>Цифры совпадают с регионом</strong> — Х077ХХ 77, 767 с регионом 67;</li>
+    <li><strong>Одинаковые буквы</strong> и <strong>палиндром букв</strong> — ААА, ВОВ;</li>
+    <li><strong>Весь номер из похожих символов</strong> — В888ВВ, Т777ТТ 777.</li>
+  </ul>
+
+  <h2>Редкость номеров</h2>
+  <p>Каждому номеру игра присваивает тир редкости:</p>
+  <ul class="tiers">
+    <li class="t-common">Обычный</li>
+    <li class="t-uncommon">Необычный</li>
+    <li class="t-rare">Редкий</li>
+    <li class="t-epic">Эпический</li>
+    <li class="t-legendary">Легендарный</li>
+  </ul>
+  <p>Пороги считаются отдельно для каждого кода региона: легендарный номер — это лучшие доли процента всех номеров своего региона. Ещё есть отметка <span class="t-illegal"><strong>«Нелегальный»</strong></span> — для трёхзначных кодов, которые в жизни никогда не выдавались.</p>
+
+  <h2>Типы номеров</h2>
+  <ul>
+    <li><strong>Гражданские номера России</strong> — 89 регионов и все их коды, включая трёхзначные: 777, 797, 799, 178, 116 и другие;</li>
+    <li><strong>Полицейские номера</strong> — синие, с буквой и четырьмя цифрами;</li>
+    <li><strong>Номера такси</strong> — жёлтые;</li>
+    <li><strong>Военные номера</strong> — чёрные, с кодами войск и ведомств; чем престижнее часть, тем дороже номер;</li>
+    <li><strong>Номера Беларуси</strong> — белорусский формат со своим шрифтом.</li>
+  </ul>
+  <p>Новые типы номеров открываются по мере игры.</p>
+
+  <h2>Коллекция и экономика</h2>
+  <ul>
+    <li><strong>Коллекция</strong>: все выпавшие номера хранятся у тебя, их можно сортировать по цене и редкости;</li>
+    <li><strong>Продажа</strong>: ненужные номера продаются за игровую валюту, на неё крутятся новые;</li>
+    <li><strong>Сейф</strong>: лучшие номера защищены от случайной продажи;</li>
+    <li><strong>Автопродажа</strong>: сама продаёт номера, которые подходят под твои фильтры;</li>
+    <li><strong>Ставка на регион</strong>: можно крутить номера конкретного региона;</li>
+    <li><strong>Задания</strong> на каждый день и <strong>гараж</strong> — свой номер можно поставить на машину;</li>
+    <li><strong>Темы оформления</strong>, уровни и достижения.</li>
+  </ul>
+
+  <h2>Частые вопросы</h2>
+  <details>
+    <summary>Игра бесплатная?</summary>
+    <p>Да. Номера крутятся за игровую валюту, которую зарабатываешь продажей номеров. Покупок за деньги нет, есть необязательная реклама за бонусы.</p>
+  </details>
+  <details>
+    <summary>Можно ли играть на iPhone?</summary>
+    <p>Да, через браузер: открой <a href="https://play.mitrofanof.ru/?utm_source=generator-nomerov.ru&amp;utm_medium=game_page_faq&amp;utm_campaign=site">play.mitrofanof.ru</a> в Safari и добавь страницу на экран «Домой» — игра запускается как приложение.</p>
+  </details>
+  <details>
+    <summary>Номера в игре настоящие?</summary>
+    <p>Номера составлены по настоящим правилам: только разрешённые буквы, реальные коды регионов и известные спецсерии. Совпадение с номером конкретной машины — случайность.</p>
+  </details>
+  <details>
+    <summary>Что такое блатной номер?</summary>
+    <p>Так называют номера, которые выделяются: серии госорганов вроде АМР, ЕКХ и ООО, одинаковые цифры (777), одинаковые буквы, «зеркальные» и круглые номера. В игре такие номера ценятся выше остальных.</p>
+  </details>
+  <details>
+    <summary>Где узнать, что нового в игре?</summary>
+    <p>В <a href="https://mitrofanof.ru/changelog/">истории обновлений</a> и в <a href="https://t.me/+1n15yeqVHLY4NjVi">Telegram-канале</a>.</p>
+  </details>
+
+  <section class="cta">
+    <h2>Поймай свой А777АА</h2>
+    <p>Игра бесплатная и запускается за минуту — на Android или прямо в браузере.</p>
+    <div class="actions" style="margin-bottom:0">
+      <a class="btn primary" href="https://play.google.com/store/apps/details?id=com.AksiCo.NumGen&amp;referrer=utm_source%3Dgenerator-nomerov.ru%26utm_medium%3Dgame_page_bottom%26utm_campaign%3Dsite">Скачать в Google Play</a>
+      <a class="btn" href="https://play.mitrofanof.ru/?utm_source=generator-nomerov.ru&amp;utm_medium=game_page_bottom&amp;utm_campaign=site">Играть в браузере</a>
+    </div>
+  </section>
+</main>
+</div>
+
+<footer>
+  <span>© 2026 Mitrofan Games</span>
+  <a href="https://mitrofanof.ru/changelog/">Что нового</a>
+  <a href="https://mitrofanof.ru/privacy/">Политика конфиденциальности</a>
+</footer>
+</body>
+</html>
