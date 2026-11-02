@@ -32,12 +32,12 @@ test('every format splits by its own pattern', () => {
   }
 });
 
-test('an unknown format or a text off its pattern shows as plain text; no plate is none', () => {
-  assert.deepStrictEqual(F.plateOf('X1Y2', 'xx-new', 0), { cls: 'plain', band: '', parts: [{ t: 'X1Y2', small: false }],
-    region: '', country: '', flag: false });
-  assert.strictEqual(F.plateOf('ZZZ', 'ru-civil', 0).cls, 'plain');
+test('an unknown format, a text off its pattern or no plate draws nothing', () => {
+  assert.strictEqual(F.plateOf('X1Y2', 'xx-new', 0), null);
+  assert.strictEqual(F.plateOf('ZZZ', 'ru-civil', 0), null);
+  assert.strictEqual(F.plateOf('SUKA', 'ru-civil', 0), null, 'a web player\'s own text is never drawn as a plate');
   assert.strictEqual(F.plateOf('', 'ru-civil', 0), null);
-  for (const f of ['constructor', 'toString', '__proto__', 'hasOwnProperty']) assert.strictEqual(F.plateOf('A1', f, 0).cls, 'plain', f);
+  for (const f of ['constructor', 'toString', '__proto__', 'hasOwnProperty']) assert.strictEqual(F.plateOf('A1', f, 0), null, f);
 });
 
 test('numbers, prices, serials, rewards and names read as in the game', () => {

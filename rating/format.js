@@ -15,6 +15,8 @@
 
   // A plate's text is the game's Plate.Display: its segments' values joined, in Latin letters. Each format splits by its
   // own pattern; Russian civil, police, taxi and army letters are Cyrillic on the real plates, the rest stay Latin.
+  // The server's site-rating.js PlatePatterns holds the same table (it blanks a plate this page would not draw): change
+  // both or neither.
   const Formats = {
     'ru-civil': [/^([A-Z])(\d{3})([A-Z]{2})(\d{2,3})$/, (m, v) => ({ cls: 'ru', parts: [big(cyr(m[1])), big(m[2]), small(cyr(m[3]))], region: m[4], country: 'RUS', flag: v !== 1 })],
     'ru-police': [/^([A-Z])(\d{4})(\d{2})$/, m => ({ cls: 'police', parts: [big(cyr(m[1])), big(m[2])], region: m[3], country: 'RUS' })],
@@ -27,14 +29,16 @@
     'kz-civil': [/^(\d{3})([A-Z]{3})(\d{2})$/, m => ({ cls: 'kz', band: 'KZ', parts: [big(m[1]), big(m[2])], region: m[3] })],
   };
 
-  /** How to draw a plate: {cls, band, parts: [{t, small}], region, country, flag}; plain text for a format this page does
-   *  not know or a text off its pattern; null for no plate. */
+  /** How to draw a plate: {cls, band, parts: [{t, small}], region, country, flag}; null for no plate, for a format this
+   *  page does not know and for a text off its pattern: a web player writes the plate text, so it is never shown as is. */
   function plateOf(plate, format, variant) {
     if (!plate) return null;
-    // A format id comes from players' records: an own-property check, so 'constructor' is not a format.
-    const f = Object.hasOwn(Formats, format) ? Formats[format] : null;
+    // A format id comes from players' records: an own-property check, so 'constructor' is not a format. (Not
+    // Object.hasOwn: Safari before 15.4 has none.)
+    const f = Object.prototype.hasOwnProperty.call(Formats, format) ? Formats[format] : null;
     const m = f && f[0].exec(plate);
-    const p = m ? f[1](m, variant) : { cls: 'plain', parts: [big(plate)] };
+    if (!m) return null;
+    const p = f[1](m, variant);
     return { cls: p.cls, band: p.band || '', parts: p.parts, region: p.region || '', country: p.country || '', flag: p.flag === true };
   }
 
