@@ -1,6 +1,8 @@
 # Not published by deploy.sh (git archive).
 .gitattributes export-ignore
 deploy.sh export-ignore
+*.test.js export-ignore
+.gitignore export-ignore
 
 # The deploy script runs under sh, which chokes on CRLF.
 *.sh text eol=lf
