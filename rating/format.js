@@ -31,13 +31,14 @@
    *  not know or a text off its pattern; null for no plate. */
   function plateOf(plate, format, variant) {
     if (!plate) return null;
-    const f = Formats[format];
+    // A format id comes from players' records: an own-property check, so 'constructor' is not a format.
+    const f = Object.hasOwn(Formats, format) ? Formats[format] : null;
     const m = f && f[0].exec(plate);
     const p = m ? f[1](m, variant) : { cls: 'plain', parts: [big(plate)] };
     return { cls: p.cls, band: p.band || '', parts: p.parts, region: p.region || '', country: p.country || '', flag: p.flag === true };
   }
 
-  const nb = ' ';
+  const nb = '\u00a0';
   const count = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, nb);
   const money = n => `${count(n)}${nb}₽`;
   const serial = (list, n) => (list === 'web' ? `№${n}` : `#${n}`);

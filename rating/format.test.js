@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const F = require('./format.js');
 
-const nb = ' ';
+const nb = '\u00a0';
 const parts = p => p.parts.map(x => (x.small ? `(${x.t})` : x.t)).join(' ');
 
 test('a Russian civil plate turns its letters Cyrillic and keeps the flag unless it is the no-flag variation', () => {
@@ -37,6 +37,7 @@ test('an unknown format or a text off its pattern shows as plain text; no plate 
     region: '', country: '', flag: false });
   assert.strictEqual(F.plateOf('ZZZ', 'ru-civil', 0).cls, 'plain');
   assert.strictEqual(F.plateOf('', 'ru-civil', 0), null);
+  for (const f of ['constructor', 'toString', '__proto__', 'hasOwnProperty']) assert.strictEqual(F.plateOf('A1', f, 0).cls, 'plain', f);
 });
 
 test('numbers, prices, serials, rewards and names read as in the game', () => {
