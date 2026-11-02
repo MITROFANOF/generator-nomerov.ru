@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /rating.json
 
 Sitemap: https://generator-nomerov.ru/sitemap.xml

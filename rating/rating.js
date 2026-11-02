@@ -12,9 +12,11 @@
     if (text !== undefined) e.textContent = text;
     return e;
   };
-  const button = (cls, text, onClick) => {
+  // A key marks a button the page rebuilds on click, so render() can put the focus back on its twin.
+  const button = (cls, text, onClick, key) => {
     const b = el('button', cls, text);
     b.type = 'button';
+    if (key) b.dataset.focus = key;
     b.addEventListener('click', onClick);
     return b;
   };
@@ -50,10 +52,11 @@
     return box;
   }
 
-  // Second, first, third: the first stands in the middle and highest.
+  // The steps are built first, second, third, so a screen reader reads the winner first; the CSS puts the first in the
+  // middle (order 2-1-3) and highest.
   function podium(rows, tab, list) {
     const box = el('div', 'podium');
-    for (const i of [1, 0, 2]) {
+    for (const i of [0, 1, 2]) {
       const row = rows[i];
       const step = el('div', `podium__step podium__step--${i + 1}`);
       if (row) {
@@ -102,6 +105,7 @@
       const metrics = s.lists.find(l => l.list === list).metrics;
       const key = `${s.id}/${list}`;
       const metric = metrics.find(m => m.metric === seasonMetric.get(key)) || metrics[0];
+      if (!metric) continue;
       const card = el('section', 'card');
       card.append(el('h2', 'card__title', `Сезон ${s.id}`));
       card.append(el('p', 'card__caption', F.seasonCaption(s)));
@@ -109,7 +113,7 @@
         const chips = el('div', 'chips');
         for (const m of metrics) {
           chips.append(button(m === metric ? 'chip chip--on' : 'chip', F.metricName(m.metric),
-            () => { seasonMetric.set(key, m.metric); render(); }));
+            () => { seasonMetric.set(key, m.metric); render(); }, `chip:${key}:${m.metric}`));
         }
         card.append(chips);
       }
@@ -118,19 +122,29 @@
         const open = unfolded.has(key);
         if (open) card.append(table(metric.top.slice(3), metric.metric, list));
         card.append(button('more', open ? 'Свернуть' : 'Весь топ',
-          () => { if (open) unfolded.delete(key); else unfolded.add(key); render(); }));
+          () => { if (open) unfolded.delete(key); else unfolded.add(key); render(); }, `more:${key}`));
       }
       box.append(card);
     }
     return box;
   }
 
+  function renderMeta() {
+    $('rating-meta').textContent = `${F.seasonLine(data)} · ${F.ago(data.at, Date.now())}`;
+  }
+
   function render() {
     for (const b of document.querySelectorAll('[data-list]')) b.setAttribute('aria-pressed', String(b.dataset.list === view.list));
-    for (const b of document.querySelectorAll('[data-tab]')) b.setAttribute('aria-selected', String(b.dataset.tab === view.tab));
+    for (const b of document.querySelectorAll('[data-tab]')) b.setAttribute('aria-pressed', String(b.dataset.tab === view.tab));
     if (!data) return;
-    $('rating-meta').textContent = `${F.seasonLine(data)} · ${F.ago(data.at, Date.now())}`;
+    renderMeta();
+    // The body is rebuilt, so a focused chip or «Весь топ» would drop its focus: find its twin by key.
+    const focused = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.focus : undefined;
     $('rating-body').replaceChildren(view.tab === 'seasons' ? seasons() : board());
+    if (focused) {
+      const again = document.querySelector(`[data-focus="${CSS.escape(focused)}"]`);
+      if (again) again.focus();
+    }
   }
 
   function pick(next) {
@@ -139,23 +153,54 @@
     render();
   }
 
+  // The snapshot, checked; throws when it cannot be had or is not ours.
+  async function fetchSnapshot() {
+    const r = await fetch('/rating.json', { cache: 'no-cache', signal: typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(15000) : undefined });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const json = await r.json();
+    if (!json || json.v !== 1 || !json.lists) throw new Error('shape');
+    return json;
+  }
+
+  // Only the fetch is guarded: a bug in render() must not read as «недоступен», where «Повторить» could never help.
   async function load() {
     $('rating-body').replaceChildren(el('p', 'note', 'Загружаем рейтинг…'));
+    let json;
     try {
-      const r = await fetch('/rating.json', { cache: 'no-cache' });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const json = await r.json();
-      if (!json || json.v !== 1 || !json.lists) throw new Error('shape');
-      data = json;
+      json = await fetchSnapshot();
+    } catch (e) {
+      console.error(e);
+      $('rating-body').replaceChildren(el('p', 'note', 'Рейтинг сейчас недоступен'), button('more', 'Повторить', load));
+      return;
+    }
+    data = json;
+    render();
+  }
+
+  // A tab left open for hours: the snapshot is renewed every five minutes, so a visitor coming back gets a fresh one,
+  // quietly: no «Загружаем…», and a failure keeps what is on screen.
+  let refreshing = false;
+  async function refresh() {
+    if (refreshing) return;
+    refreshing = true;
+    try {
+      data = await fetchSnapshot();
       render();
     } catch (e) {
-      $('rating-body').replaceChildren(el('p', 'note', 'Рейтинг сейчас недоступен'), button('more', 'Повторить', load));
+      console.error(e);
+    } finally {
+      refreshing = false;
     }
   }
 
   for (const b of document.querySelectorAll('[data-list]')) b.addEventListener('click', () => pick({ list: b.dataset.list }));
   for (const b of document.querySelectorAll('[data-tab]')) b.addEventListener('click', () => pick({ tab: b.dataset.tab }));
   window.addEventListener('hashchange', () => { view = F.parseHash(location.hash); render(); });
+  // The age in the header keeps counting between snapshots.
+  setInterval(() => { if (data) renderMeta(); }, 60e3);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && data && Date.now() - Date.parse(data.at) > 5 * 60e3) refresh();
+  });
   render();
   load();
 })();

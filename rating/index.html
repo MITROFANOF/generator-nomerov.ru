@@ -51,7 +51,7 @@
   .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
   .tabs button { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 7px 14px;
     border-radius: 999px; font-size: 14px; font-weight: 600; }
-  .tabs button[aria-selected="true"] { border-color: var(--accent); color: var(--accent); }
+  .tabs button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
 
   .note { color: var(--muted); text-align: center; margin: 40px 0 12px; }
   .more { display: block; margin: 12px auto 0; background: transparent; border: 1px solid var(--border); color: var(--text);
@@ -60,6 +60,10 @@
 
   .podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-items: end; margin: 22px 0 8px; }
   .podium__step { text-align: center; min-width: 0; }
+  /* The DOM runs 1, 2, 3 (a screen reader hears the winner first); the eye sees 2, 1, 3. */
+  .podium__step--1 { order: 2; }
+  .podium__step--2 { order: 1; }
+  .podium__step--3 { order: 3; }
   .podium__name { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; overflow: hidden;
     text-overflow: ellipsis; white-space: nowrap; }
   .podium__block { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 4px 12px;
@@ -71,9 +75,10 @@
   .podium__step--1 .podium__place { color: #ffc23d; font-size: 30px; }
   .podium__step--2 .podium__place { color: #c9c9d2; }
   .podium__step--3 .podium__place { color: #d9a066; }
-  .podium .val { font-size: 14px; color: var(--muted); }
+  .podium .val { font-size: clamp(11px, 3.1vw, 14px); color: var(--muted); max-width: 100%; }
   .podium .val--best { flex-direction: column; gap: 4px; }
-  .podium .plate { font-size: 10px; }
+  .podium .price { font-size: inherit; }
+  .podium .plate { font-size: 10px; max-width: 100%; }
 
   .rows { list-style: none; margin: 8px 0 0; padding: 0; }
   .row { display: flex; align-items: center; gap: 12px; padding: 10px 4px; border-bottom: 1px solid var(--border); }
@@ -96,7 +101,7 @@
   .plate { display: inline-flex; align-items: stretch; height: 2em; font-size: 14px; background: #fff; color: #111;
     border: .14em solid #111; border-radius: .3em; font-family: "Roboto Condensed", "Arial Narrow", sans-serif;
     font-weight: 600; line-height: 1; white-space: nowrap; overflow: hidden; }
-  .plate__num { display: flex; align-items: center; gap: .2em; padding: 0 .35em; font-size: 1.3em; }
+  .plate__num { display: flex; align-items: baseline; gap: .2em; padding: 0 .35em; font-size: 1.3em; line-height: 1.4; }
   .plate__num small { font-size: .8em; }
   .plate__reg { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .05em;
     border-left: .14em solid currentColor; padding: 0 .3em; min-width: 2em; }
@@ -143,14 +148,14 @@
     <button type="button" data-list="android" aria-pressed="true">Android</button>
     <button type="button" data-list="web" aria-pressed="false">Браузер</button>
   </div>
-  <div class="tabs" role="tablist" aria-label="Таблица">
-    <button type="button" role="tab" data-tab="spins" aria-selected="true">Сгенерировано</button>
-    <button type="button" role="tab" data-tab="best" aria-selected="false">Самый дорогой номер</button>
-    <button type="button" role="tab" data-tab="serial" aria-selected="false">Экземпляры</button>
-    <button type="button" role="tab" data-tab="seasons" aria-selected="false">Сезоны</button>
+  <div class="tabs" role="group" aria-label="Таблица">
+    <button type="button" data-tab="spins" aria-pressed="true">Сгенерировано</button>
+    <button type="button" data-tab="best" aria-pressed="false">Самый дорогой номер</button>
+    <button type="button" data-tab="serial" aria-pressed="false">Экземпляры</button>
+    <button type="button" data-tab="seasons" aria-pressed="false">Сезоны</button>
   </div>
 
-  <div id="rating-body" aria-live="polite">
+  <div id="rating-body">
     <noscript><p class="note">Рейтинг показывается с включённым JavaScript.</p></noscript>
   </div>
 
