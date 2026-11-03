@@ -18,7 +18,7 @@
   // The server's site-rating.js PlatePatterns holds the same table (it blanks a plate this page would not draw): change
   // both or neither.
   const Formats = {
-    'ru-civil': [/^([A-Z])(\d{3})([A-Z]{2})(\d{2,3})$/, (m, v) => ({ cls: 'ru', parts: [big(cyr(m[1])), big(m[2]), small(cyr(m[3]))], region: m[4], country: 'RUS', flag: v !== 1 })],
+    'ru-civil': [/^([A-Z])(\d{3})([A-Z]{2})(\d{2,3})$/, (m, v) => ({ cls: 'ru', parts: [small(cyr(m[1])), big(m[2]), small(cyr(m[3]))], region: m[4], country: 'RUS', flag: v !== 1 })],
     'ru-police': [/^([A-Z])(\d{4})(\d{2})$/, m => ({ cls: 'police', parts: [big(cyr(m[1])), big(m[2])], region: m[3], country: 'RUS' })],
     'ru-taxi': [/^([A-Z]{2})(\d{3})(\d{2})$/, m => ({ cls: 'taxi', parts: [big(cyr(m[1])), big(m[2])], region: m[3], country: 'RUS' })],
     'ru-army': [/^(\d{4})([A-Z]{2})(\d{2,3})$/, m => ({ cls: 'army', parts: [big(m[1]), small(cyr(m[2]))], region: m[3], country: 'RUS' })],

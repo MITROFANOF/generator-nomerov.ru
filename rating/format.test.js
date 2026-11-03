@@ -7,9 +7,9 @@ const F = require('./format.js');
 const nb = '\u00a0';
 const parts = p => p.parts.map(x => (x.small ? `(${x.t})` : x.t)).join(' ');
 
-test('a Russian civil plate turns its letters Cyrillic and keeps the flag unless it is the no-flag variation', () => {
+test('a Russian civil plate turns its letters Cyrillic, all three small beside the digits, and keeps the flag unless it is the no-flag variation', () => {
   const p = F.plateOf('O777OO77', 'ru-civil', 0);
-  assert.strictEqual(parts(p), 'О 777 (ОО)');
+  assert.strictEqual(parts(p), '(О) 777 (ОО)', 'the first letter is as small as the last two, as on the real plate');
   assert.deepStrictEqual([p.cls, p.band, p.region, p.country, p.flag], ['ru', '', '77', 'RUS', true]);
   const q = F.plateOf('M999MM799', 'ru-civil', 1);
   assert.deepStrictEqual([q.region, q.flag], ['799', false]);
